@@ -1,7 +1,7 @@
 schema_version: 20180708
 name: ginfn
-version: 0.0.8
-runtime: go
-build_image: fnproject/go:1.19-dev
-run_image: fnproject/go:1.19
+version: 0.0.10
+runtime: go1.24
+build_image: fnproject/go:1.24-dev
+run_image: fnproject/go:1.24
 entrypoint: ./func
