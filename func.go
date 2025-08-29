@@ -1,41 +1,34 @@
 package main
 
 import (
-	"fmt"
-	"log"
+	"func/pkg/sandbox"
+	"net/http"
 	"os"
 
 	"github.com/fnproject/fdk-go"
 	"github.com/gin-gonic/gin"
 )
 
-// Person struct
-type Person struct {
-	Name string `json:"name"`
-}
-
 func InitializeRouter() *gin.Engine {
 	r := gin.Default()
-
-	r.POST("/ping", func(c *gin.Context) {
-		p := &Person{Name: "World"}
-
-		if err := c.ShouldBindJSON(p); err != nil {
-			log.Printf("Error decoding body: %v", err)
-		}
-
-		c.JSON(200, gin.H{
-			"message": fmt.Sprintf("Hello %s", p.Name),
-		})
-		log.Print("Inside Go Hello World function (Gin style)")
-	})
-
 	return r
+}
+
+func mountUserRoutes(router *gin.Engine) {
+	api := router.Group("/sandbox/v1")
+	{
+		api.POST("/submit", sandbox.SubmitFile)
+	}
+
+	// Handle unmatched routes
+	router.NoRoute(func(c *gin.Context) {
+		c.JSON(http.StatusNotFound, gin.H{"error": "not found"})
+	})
 }
 
 func main() {
 	r := InitializeRouter()
-
+	mountUserRoutes(r)
 	if os.Getenv("FN_FORMAT") == "" {
 		// -- Local Run ---
 		r.Run()
